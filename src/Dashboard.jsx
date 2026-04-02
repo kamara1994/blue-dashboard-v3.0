@@ -258,21 +258,35 @@ export default function BlueDashboard() {
   }, []);
   useEffect(() => { chatEnd.current?.scrollIntoView({ behavior: "smooth" }); }, [chatHist]);
 
-  const sendChat = useCallback(() => {
+  const sendChat = useCallback(async () => {
     if (!chatMsg.trim()) return;
     setChatHist(p => [...p, { f: "u", t: chatMsg }]);
-    const m = chatMsg.toLowerCase(); setChatMsg("");
-    setTimeout(() => {
-      let r = "Processing. Check Telegram for detailed results.";
-      if (m.includes("status")) r = `BLUE v3.0 | ${status} | 6/6 WF | 127 applied | 23 pipeline | 5 interviews | Offer prob: 73%`;
-      else if (m.includes("handshake")) r = "Scanning byui.joinhandshake.com... Found 3 new cybersecurity internships. Top: Raytheon Security Intern (ATS: 87, 16/19 keywords). Want me to apply?";
-      else if (m.includes("interview") || m.includes("prep")) r = "Next: CrowdStrike SOC Analyst I — Apr 7, 10:00 AM (Video). Prep: 85%. Missing: mock sim #2. Run it now?";
-      else if (m.includes("offer")) r = "Palo Alto Networks Security Intern — $42/hr, hybrid. 85th percentile for intern comp. Deadline: Apr 10. Recommend counter with housing stipend.";
-      else if (m.includes("brief")) r = "Pipeline: 23 active. 2 new recruiter emails (positive sentiment). Top action: Complete Google interview prep (40%). 3 new Handshake matches.";
-      else if (m.includes("confetti")) { setConfetti(true); setTimeout(() => setConfetti(false), 3500); r = "Celebrating!"; }
-      setChatHist(p => [...p, { f: "b", t: r }]);
-    }, 700);
-  }, [chatMsg, status]);
+    const msg = chatMsg; setChatMsg("");
+    
+    // Local UI actions
+    if (msg.toLowerCase().includes("confetti")) {
+      setConfetti(true); setTimeout(() => setConfetti(false), 3500);
+      setChatHist(p => [...p, { f: "b", t: "Celebrating! 🎉" }]);
+      return;
+    }
+    
+    // Show typing indicator
+    setChatHist(p => [...p, { f: "b", t: "⏳ Thinking..." }]);
+    
+    try {
+      const res = await fetch("https://kamarajoseph.app.n8n.cloud/webhook/dashboard-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: { text: msg } })
+      });
+      const data = await res.json();
+      const reply = data.output || data.text || data.message || JSON.stringify(data);
+      // Remove typing indicator and add real response
+      setChatHist(p => [...p.slice(0, -1), { f: "b", t: reply }]);
+    } catch (e) {
+      setChatHist(p => [...p.slice(0, -1), { f: "b", t: "Connection error. Check n8n is active." }]);
+    }
+  }, [chatMsg]);
 
   const tabs = [
     { id: "overview", l: "Overview", I: Target },
