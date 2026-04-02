@@ -1,749 +1,668 @@
-import { useEffect, useRef, useState } from 'react'
-import Chart from 'chart.js/auto'
+import { useState, useEffect, useRef, useCallback } from "react";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
+import { MapPin, Clock, Calendar, Send, Briefcase, Target, TrendingUp, Brain, MessageCircle, X, ExternalLink, Navigation, Bell, Shield, Award, CheckCircle, ArrowUpRight, Play, Pause, Search, Cloud, Car, Star, Globe, Zap, Radio, Lock, Eye, EyeOff } from "lucide-react";
 
-// ══ DATA ══
-const REAL = {
-  m:{applied:127,pipe:23,intv:5,resp:'14.2%',prob:73},
-  w:[12,18,22,19,24,16,8,8],
-  b:[{b:'LinkedIn',i:2,c:'#0A66C2'},{b:'Handshake',i:1,c:'#FF6B35'},{b:'Indeed',i:1,c:'#2164F3'},{b:'CrowdStrike',i:1,c:'#E8392B'},{b:'Dice',i:0,c:'#00C1D4'},{b:'USAJobs',i:0,c:'#1a5c8a'}],
-  pipeline:[
-    {stage:'Queued',col:'rgba(120,120,140,.7)',items:[{co:'Fortinet',ro:'Security Intern',ats:82,kw:'12/18 kw'},{co:'Accenture',ro:'Cyber Associate',ats:78,kw:'10/16 kw'}]},
-    {stage:'Applied',col:'rgba(0,212,255,.7)',items:[{co:'Booz Allen',ro:'SOC Analyst',ats:88,kw:'15/18 kw'},{co:'KPMG',ro:'Cyber Intern',ats:85,kw:'14/17 kw'},{co:'Northrop',ro:'Cyber Eng I',ats:80,kw:'11/15 kw'}]},
-    {stage:'Screening',col:'rgba(255,214,0,.7)',items:[{co:'Deloitte',ro:'Cyber Analyst',ats:91,kw:'18/20 kw'}]},
-    {stage:'Interview',col:'rgba(176,110,255,.7)',items:[{co:'CrowdStrike',ro:'SOC Analyst I',ats:94,kw:'20/22 kw'},{co:'Google',ro:'Security Eng',ats:92,kw:'19/21 kw'}]},
-    {stage:'Offer',col:'rgba(0,230,118,.7)',items:[{co:'Palo Alto',ro:'Security Intern',ats:96,kw:'21/22 kw'}]},
-  ],
-  iv:[
-    {co:'CrowdStrike',ro:'SOC Analyst I',date:'2026-04-07',time:'10:00',type:'Video',addr:'',link:'https://zoom.us/j/123456',prep:85,wx:'68°F Cloudy',cm:'',culture:4.2},
-    {co:'Google',ro:'Security Engineer',date:'2026-04-10',time:'14:00',type:'Onsite',addr:'1600 Amphitheatre Pkwy, Mountain View, CA 94043',link:'',prep:40,wx:'72°F Sunny',cm:'45 min · Leave by 1:15 PM',culture:4.5},
-    {co:'Palo Alto Networks',ro:'Security Intern',date:'2026-04-14',time:'11:00',type:'Onsite',addr:'3000 Tannery Way, Santa Clara, CA 95054',link:'',prep:0,wx:'70°F Clear',cm:'50 min · Leave by 10:10 AM',culture:4.1},
-  ],
-  offers:[{co:'Palo Alto Networks',ro:'Security Intern',sal:'$42/hr',start:'May 12, 2026',dl:'April 10, 2026',addr:'3000 Tannery Way, Santa Clara, CA 95054',remote:'Hybrid (3 days onsite)',benefits:'Housing stipend, mentorship program, cert reimbursement up to $2K',pct:85}],
-  act:[
-    {t:'2m ago',a:'Scanned Handshake — 3 new cybersecurity internships found',tp:'scan',i:'🌐'},
-    {t:'18m ago',a:'Applied to Booz Allen SOC Analyst (ATS: 88 · 15/18 keywords matched)',tp:'apply',i:'📤'},
-    {t:'45m ago',a:'Deloitte recruiter replied — draft response ready for your approval',tp:'email',i:'💬'},
-    {t:'1h ago',a:'CrowdStrike interview prep updated — 85% complete',tp:'prep',i:'🧠'},
-    {t:'2h ago',a:'Dream Company Alert: CrowdStrike posted SOC Analyst II role',tp:'alert',i:'🔔'},
-    {t:'3h ago',a:'Weekly PDF Intelligence Report generated and emailed',tp:'report',i:'📊'},
-  ],
-  chk:[
-    {t:'Resume copies (2x printed)',d:true},{t:'5 questions prepared',d:true},
-    {t:'Review evidence pack',d:false},{t:'Research interviewer',d:false},
-    {t:'Test video/audio setup',d:true},{t:'Government ID ready',d:false},
-    {t:'Parking researched',d:false},{t:'Outfit ready',d:true},
-  ]
+// ════════════════════════════════════════════════════════════════
+// BLUE v3.0 GOD TIER — AUTONOMOUS CAREER OS DASHBOARD
+// Cybersecurity Aesthetic · Dark Glassmorphism · Animated Canvas
+// ════════════════════════════════════════════════════════════════
+
+// ── Animated Cybersecurity Background ──
+function CyberBG() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    const ctx = c.getContext("2d");
+    let af, nodes = [];
+    const resize = () => {
+      c.width = window.innerWidth;
+      c.height = window.innerHeight;
+      nodes = [];
+      const count = Math.floor((c.width * c.height) / 22000);
+      for (let i = 0; i < count; i++) {
+        nodes.push({
+          x: Math.random() * c.width, y: Math.random() * c.height,
+          vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2,
+          r: Math.random() * 1.5 + 0.5, p: Math.random() * Math.PI * 2,
+          isLock: Math.random() > 0.88
+        });
+      }
+    };
+    const draw = () => {
+      ctx.clearRect(0, 0, c.width, c.height);
+      // Grid
+      ctx.strokeStyle = "rgba(0,180,216,0.018)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < c.width; x += 55) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, c.height); ctx.stroke(); }
+      for (let y = 0; y < c.height; y += 55) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(c.width, y); ctx.stroke(); }
+      // Nodes
+      nodes.forEach((n, i) => {
+        n.x += n.vx; n.y += n.vy; n.p += 0.012;
+        if (n.x < 0 || n.x > c.width) n.vx *= -1;
+        if (n.y < 0 || n.y > c.height) n.vy *= -1;
+        const alpha = 0.2 + Math.sin(n.p) * 0.15;
+        // Connections
+        for (let j = i + 1; j < nodes.length; j++) {
+          const m = nodes[j];
+          const d = Math.hypot(n.x - m.x, n.y - m.y);
+          if (d < 110) {
+            ctx.beginPath(); ctx.strokeStyle = `rgba(0,180,216,${0.05 * (1 - d / 110)})`;
+            ctx.lineWidth = 0.5; ctx.moveTo(n.x, n.y); ctx.lineTo(m.x, m.y); ctx.stroke();
+          }
+        }
+        if (n.isLock) {
+          ctx.strokeStyle = `rgba(0,180,216,${alpha * 0.45})`;
+          ctx.lineWidth = 0.7;
+          ctx.beginPath(); ctx.arc(n.x, n.y - 3.5, 3, Math.PI, 0); ctx.stroke();
+          ctx.strokeRect(n.x - 3.5, n.y - 0.5, 7, 5.5);
+        } else {
+          ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0,180,216,${alpha})`; ctx.fill();
+          ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0,180,216,${alpha * 0.06})`; ctx.fill();
+        }
+      });
+      // Scan line
+      const sy = (Date.now() * 0.018) % c.height;
+      ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(c.width, sy);
+      ctx.strokeStyle = "rgba(0,180,216,0.035)"; ctx.lineWidth = 1; ctx.stroke();
+      af = requestAnimationFrame(draw);
+    };
+    resize(); window.addEventListener("resize", resize); draw();
+    return () => { cancelAnimationFrame(af); window.removeEventListener("resize", resize); };
+  }, []);
+  return <canvas ref={ref} className="fixed inset-0 z-0" style={{ pointerEvents: "none" }} />;
 }
 
-const DEMO = JSON.parse(JSON.stringify(REAL))
-DEMO.m.applied=42; DEMO.m.pipe=8; DEMO.m.intv=2; DEMO.m.prob=55
+// ── Glass Panel ──
+const Glass = ({ children, className = "", glow = false }) => (
+  <div className={`relative overflow-hidden rounded-2xl border transition-all duration-300 hover:scale-[1.005] ${glow ? "border-cyan-500/15 hover:border-cyan-500/25" : "border-white/[0.05] hover:border-white/[0.1]"} ${className}`}
+    style={{ background: "rgba(5,10,28,0.38)", backdropFilter: "blur(22px)", WebkitBackdropFilter: "blur(22px)", boxShadow: glow ? "0 0 25px rgba(0,180,216,0.06)" : "none" }}>
+    <div className="absolute inset-0 bg-gradient-to-br from-white/[0.025] via-transparent to-transparent pointer-events-none" />
+    <div className="relative z-10">{children}</div>
+  </div>
+);
 
-const BOARDS = ['LinkedIn','Handshake','Indeed','Dice','CyberSecJobs','ZipRecruiter','USAJobs','Glassdoor','SANS','CrowdStrike','Google Careers','Palo Alto']
-const ALL_B = [{n:'LinkedIn',f:'2h'},{n:'Handshake (BYU-Idaho)',f:'2h'},{n:'Indeed',f:'2h'},{n:'Dice',f:'4h'},{n:'CyberSecJobs',f:'4h'},{n:'ZipRecruiter',f:'4h'},{n:'USAJobs',f:'daily'},{n:'Glassdoor',f:'4h'},{n:'SANS Jobs',f:'daily'},{n:'CrowdStrike Direct',f:'30m'},{n:'Google Careers',f:'1h'},{n:'Palo Alto Direct',f:'30m'},{n:'Booz Allen',f:'1h'},{n:'Deloitte',f:'daily'},{n:'Microsoft',f:'2h'}]
-const AC = {scan:'#00D4FF',apply:'#00E676',email:'#FFD600',prep:'#B06EFF',alert:'#FF5252',report:'#40C4FF'}
+// ── Offer Probability Gauge ──
+const Gauge = ({ value }) => {
+  const r = 56, circ = 2 * Math.PI * r * 0.75;
+  const off = circ - (value / 100) * circ;
+  const col = value >= 70 ? "#00C853" : value >= 40 ? "#FFB300" : "#E53935";
+  return (
+    <div className="relative flex items-center justify-center" style={{ width: 140, height: 140 }}>
+      <svg width={140} height={140} className="absolute" style={{ transform: "rotate(-135deg)" }}>
+        <circle cx={70} cy={70} r={r} fill="none" stroke="rgba(255,255,255,0.025)" strokeWidth="5" strokeDasharray={circ} strokeLinecap="round" />
+        <circle cx={70} cy={70} r={r} fill="none" stroke={col} strokeWidth="5" strokeDasharray={circ} strokeDashoffset={off} strokeLinecap="round"
+          style={{ filter: `drop-shadow(0 0 8px ${col}50)`, transition: "stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1)" }} />
+      </svg>
+      <div className="flex flex-col items-center">
+        <span className="text-3xl font-black" style={{ fontFamily: "monospace", textShadow: `0 0 20px ${col}20` }}>{value}<span className="text-lg">%</span></span>
+        <span className="text-[7px] text-gray-600 uppercase tracking-[0.3em] mt-0.5">offer prob</span>
+      </div>
+    </div>
+  );
+};
 
-export default function Dashboard() {
-  const canvasRef = useRef(null)
-  const wChartRef = useRef(null)
-  const bChartRef = useRef(null)
+// ── Maps Deep Links ──
+const MapBtns = ({ addr }) => {
+  if (!addr) return null;
+  const e = encodeURIComponent(addr);
+  return (
+    <div className="flex gap-1.5 mt-2">
+      <a href={`https://www.google.com/maps/dir/?api=1&destination=${e}`} target="_blank" rel="noopener noreferrer"
+        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-500/[0.07] border border-cyan-500/[0.12] text-cyan-400 text-[9px] font-medium hover:bg-cyan-500/[0.15] transition-all">
+        <Navigation size={9} /> Google Maps
+      </a>
+      <a href={`https://maps.apple.com/?daddr=${e}`} target="_blank" rel="noopener noreferrer"
+        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-500/[0.07] border border-purple-500/[0.12] text-purple-400 text-[9px] font-medium hover:bg-purple-500/[0.15] transition-all">
+        <MapPin size={9} /> Apple Maps
+      </a>
+    </div>
+  );
+};
 
-  const [locked, setLocked] = useState(true)
-  const [activeTab, setActiveTab] = useState('overview')
-  const [demoMode, setDemoMode] = useState(false)
-  const [chatOpen, setChatOpen] = useState(false)
-  const [messages, setMessages] = useState([{text:'BLUE v3.0 online. 6/6 workflows active. 23 in pipeline. 22 boards scanning. How can I help?', from:'bot'}])
-  const [chatInput, setChatInput] = useState('')
-  const [toasts, setToasts] = useState([])
-  const [clock, setClock] = useState({h:'10',m:'00',s:'00',date:'Thursday, April 2',greet:'Good Morning, Joseph! ☀️'})
-  const [scanLabel, setScanLabel] = useState('scanning LinkedIn...')
-  const [countdown, setCountdown] = useState('--')
-  const [weather, setWeather] = useState({temp:'--°F', icon:'🌤'})
-  const [location, setLocation] = useState('Rexburg, Idaho')
-  const [n8nStatus, setN8nStatus] = useState('wn')
-  const [n8nStatusText, setN8nStatusText] = useState('⚠ Not Connected')
-  const [photoUrl, setPhotoUrl] = useState('')
-
-  const D = demoMode ? DEMO : REAL
-
-  // ── CLOCK ──
+// ── Countdown ──
+const Countdown = ({ date, time }) => {
+  const [left, setLeft] = useState("...");
   useEffect(() => {
-    function tick() {
-      const n = new Date()
-      const h = String(n.getHours()).padStart(2,'0')
-      const m = String(n.getMinutes()).padStart(2,'0')
-      const s = String(n.getSeconds()).padStart(2,'0')
-      const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
-      const months=['January','February','March','April','May','June','July','August','September','October','November','December']
-      const date = `${days[n.getDay()]}, ${months[n.getMonth()]} ${n.getDate()}`
-      const hr = n.getHours()
-      let gr
-      if(hr>=5&&hr<12) gr='Good Morning, Joseph! ☀️'
-      else if(hr>=12&&hr<17) gr='Good Afternoon, Joseph! 🌤'
-      else if(hr>=17&&hr<21) gr='Good Evening, Joseph! 🌆'
-      else gr='Good Night, Joseph! 🌙'
-      setClock({h,m,s,date,greet:gr})
-    }
-    tick()
-    const id = setInterval(tick, 1000)
-    return () => clearInterval(id)
-  }, [])
+    const calc = () => {
+      const h = parseInt(time), pm = time.includes("PM"), h24 = pm ? (h === 12 ? 12 : h + 12) : (h === 12 ? 0 : h);
+      const tgt = new Date(`${date}T${String(h24).padStart(2, "0")}:00:00`);
+      const d = tgt - new Date();
+      if (d <= 0) return setLeft("NOW");
+      setLeft(`${Math.floor(d / 864e5)}d ${Math.floor((d % 864e5) / 36e5)}h ${Math.floor((d % 36e5) / 6e4)}m`);
+    };
+    calc(); const iv = setInterval(calc, 60000); return () => clearInterval(iv);
+  }, [date, time]);
+  return <span className="font-mono text-xs text-cyan-400" style={{ textShadow: "0 0 8px rgba(0,180,216,0.2)" }}>{left}</span>;
+};
 
-  // ── WEATHER ──
+// ── Salary Bell Curve ──
+const BellCurve = ({ pct }) => {
+  const pts = Array.from({ length: 50 }, (_, i) => {
+    const x = i / 49 * 100, z = (x - 50) / 15;
+    return { x, y: Math.exp(-z * z / 2) * 100 };
+  });
+  const d = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x * 2.6} ${90 - p.y * 0.7}`).join(" ");
+  return (
+    <div>
+      <svg viewBox="0 0 260 95" className="w-full h-16">
+        <path d={d} fill="none" stroke="rgba(0,180,216,0.22)" strokeWidth="1.5" />
+        <path d={`${d} L260 90 L0 90 Z`} fill="rgba(0,180,216,0.04)" />
+        <line x1={pct * 2.6} y1="5" x2={pct * 2.6} y2="90" stroke="#00C853" strokeWidth="1.5" strokeDasharray="3 2" />
+        <circle cx={pct * 2.6} cy={90 - Math.exp(-((pct - 50) / 15) ** 2 / 2) * 70} r="3.5" fill="#00C853" style={{ filter: "drop-shadow(0 0 4px #00C85350)" }} />
+      </svg>
+      <div className="flex justify-between text-[7px] text-gray-700 px-0.5"><span>$30K</span><span>$55K</span><span>$80K</span><span>$105K</span><span>$130K</span></div>
+    </div>
+  );
+};
+
+// ── Data ──
+const BOARDS = ["LinkedIn", "Handshake", "Indeed", "Dice", "CyberSecJobs", "ZipRecruiter", "USAJobs", "Glassdoor", "SANS", "CrowdStrike", "Google Careers", "Palo Alto"];
+const JSONBIN_URL = "https://api.jsonbin.io/v3/b/69cb7c73aaba882197adb0cf/latest";
+const JSONBIN_KEY = "$2a$10$VhY8svRChLrOJcUZ/dcyvOMNpPlQjlcb5vRu4HC8g8.C6JOuc0P9C";
+const REAL_DATA = {
+  metrics: { applied: 127, pipe: 23, resp: 14.2, intv: 5, prob: 73 },
+  weekly: [{ w: "W1", a: 12, i: 0 }, { w: "W2", a: 18, i: 0 }, { w: "W3", a: 22, i: 1 }, { w: "W4", a: 19, i: 1 }, { w: "W5", a: 24, i: 1 }, { w: "W6", a: 16, i: 1 }, { w: "W7", a: 8, i: 1 }, { w: "W8", a: 8, i: 0 }],
+  boards: [{ b: "LinkedIn", i: 2, c: "#0A66C2" }, { b: "Handshake", i: 1, c: "#FF6B35" }, { b: "Indeed", i: 1, c: "#2164F3" }, { b: "CrowdStrike", i: 1, c: "#E8392B" }, { b: "Dice", i: 0, c: "#00C1D4" }, { b: "USAJobs", i: 0, c: "#1a3a5c" }],
+  pipeline: [
+    { stage: "Queued", items: [{ co: "Fortinet", ro: "Security Intern", ats: 82, kw: "12/18 keywords" }, { co: "Accenture", ro: "Cyber Associate", ats: 78, kw: "10/16 keywords" }] },
+    { stage: "Applied", items: [{ co: "Booz Allen", ro: "SOC Analyst", ats: 88, kw: "15/18 keywords" }, { co: "KPMG", ro: "Cyber Intern", ats: 85, kw: "14/17 keywords" }, { co: "Northrop", ro: "Cyber Eng I", ats: 80, kw: "11/15 keywords" }] },
+    { stage: "Screening", items: [{ co: "Deloitte", ro: "Cyber Analyst", ats: 91, kw: "18/20 keywords" }] },
+    { stage: "Interview", items: [{ co: "CrowdStrike", ro: "SOC Analyst I", ats: 94, kw: "20/22 keywords" }, { co: "Google", ro: "Security Eng", ats: 92, kw: "19/21 keywords" }] },
+    { stage: "Offer", items: [{ co: "Palo Alto", ro: "Security Intern", ats: 96, kw: "21/22 keywords" }] },
+  ],
+  interviews: [
+    { co: "CrowdStrike", ro: "SOC Analyst I", date: "2026-04-07", time: "10:00 AM", type: "Video", addr: "", link: "https://zoom.us/j/123456", prep: 85, wx: "68°F Cloudy", cm: "", culture: 4.2 },
+    { co: "Google", ro: "Security Engineer", date: "2026-04-10", time: "2:00 PM", type: "Onsite", addr: "1600 Amphitheatre Pkwy, Mountain View, CA 94043", link: "", prep: 40, wx: "72°F Sunny", cm: "45 min drive · Leave by 1:15 PM", culture: 4.5 },
+    { co: "Palo Alto Networks", ro: "Security Intern", date: "2026-04-14", time: "11:00 AM", type: "Onsite", addr: "3000 Tannery Way, Santa Clara, CA 95054", link: "", prep: 0, wx: "70°F Clear", cm: "50 min drive · Leave by 10:10 AM", culture: 4.1 },
+  ],
+  offers: [{ co: "Palo Alto Networks", ro: "Security Intern", sal: "$42/hr", start: "May 12, 2026", dl: "April 10, 2026", addr: "3000 Tannery Way, Santa Clara, CA 95054", remote: "Hybrid (3 days onsite)", benefits: "Housing stipend, mentorship program, cert reimbursement up to $2K", pct: 85 }],
+  activity: [
+    { t: "2m ago", a: "Scanned Handshake — 3 new cybersecurity internships found", tp: "scan" },
+    { t: "18m ago", a: "Applied to Booz Allen SOC Analyst (ATS: 88 · 15/18 keywords matched)", tp: "apply" },
+    { t: "45m ago", a: "Deloitte recruiter replied — draft response ready for approval", tp: "email" },
+    { t: "1h ago", a: "CrowdStrike interview prep updated — 85% complete", tp: "prep" },
+    { t: "2h ago", a: "Dream Company Alert: CrowdStrike posted SOC Analyst II role", tp: "alert" },
+    { t: "3h ago", a: "Weekly PDF Intelligence Report generated and emailed", tp: "report" },
+  ],
+  checklist: [
+    { t: "Resume copies (2x printed)", d: true }, { t: "5 questions to ask prepared", d: true },
+    { t: "Review evidence pack — what you sent them", d: false }, { t: "Research interviewer on LinkedIn", d: false },
+    { t: "Test video/audio setup", d: true }, { t: "Government ID for building security", d: false },
+    { t: "Parking info researched", d: false }, { t: "Outfit ready — business casual", d: true },
+  ],
+};
+const DEMO_DATA = JSON.parse(JSON.stringify(REAL_DATA));
+DEMO_DATA.interviews.forEach(iv => { iv.co = ["Acme Corp", "TechVault", "CyberShield"][Math.floor(Math.random() * 3)]; });
+DEMO_DATA.offers.forEach(o => { o.co = "SecureNet Inc"; o.sal = "$XX/hr"; o.addr = "123 Demo St, San Francisco, CA"; });
+DEMO_DATA.pipeline.forEach(s => s.items.forEach(it => { it.co = ["AlphaSec", "BetaDefense", "GammaCyber"][Math.floor(Math.random() * 3)]; }));
+DEMO_DATA.activity.forEach(a => { a.a = a.a.replace(/Booz Allen|CrowdStrike|Deloitte|Handshake/g, "DemoCompany"); });
+
+const HEATMAP = Array.from({ length: 56 }, () => ({ c: Math.floor(Math.random() * 6) }));
+const actColors = { scan: "text-cyan-400", apply: "text-green-400", email: "text-yellow-400", prep: "text-purple-400", alert: "text-red-400", report: "text-blue-400" };
+const actIcons = { scan: Globe, apply: Send, email: MessageCircle, prep: Brain, alert: Bell, report: TrendingUp };
+const stageColors = ["gray", "cyan", "yellow", "purple", "green"];
+
+// ════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ════════════════════════════════════════════════════════════════
+export default function BlueDashboard() {
+  const [tab, setTab] = useState("overview");
+  const [status, setStatus] = useState("ONLINE");
+  const [demo, setDemo] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMsg, setChatMsg] = useState("");
+  const [chatHist, setChatHist] = useState([{ f: "b", t: "BLUE v3.0 online. 6/6 workflows active. 23 in pipeline. 22 boards scanning. How can I help?" }]);
+  const [cmdOpen, setCmdOpen] = useState(false);
+  const [cmdQ, setCmdQ] = useState("");
+  const [toast, setToast] = useState(null);
+  const [confetti, setConfetti] = useState(false);
+  const [scanIdx, setScanIdx] = useState(0);
+  const [liveData, setLiveData] = useState(null);
+  const chatEnd = useRef(null);
+
+  // Fetch live data from JSONBin (updated by n8n WF4 every 5 min)
   useEffect(() => {
-    fetch('https://wttr.in/Rexburg+Idaho?format=%t+%C')
-      .then(r=>r.text()).then(d=>{
-        const l=d.toLowerCase()
-        const icon=l.includes('sun')||l.includes('clear')?'☀️':l.includes('cloud')?'⛅':l.includes('rain')?'🌧':l.includes('snow')?'❄️':'🌤'
-        setWeather({temp:d.trim()||'--°F',icon})
-      }).catch(()=>{})
-    if(navigator.geolocation){
-      navigator.geolocation.getCurrentPosition(p=>{
-        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${p.coords.latitude}&lon=${p.coords.longitude}&format=json`)
-          .then(r=>r.json()).then(d=>{
-            const c=d.address.city||d.address.town||d.address.village||'Unknown'
-            const st=d.address.state||''
-            setLocation(`${c}, ${st}`)
-          }).catch(()=>{})
-      },()=>{})
-    }
-  }, [])
+    const fetchLive = async () => {
+      try {
+        const res = await fetch(JSONBIN_URL, { headers: { "X-Master-Key": JSONBIN_KEY } });
+        const json = await res.json();
+        if (json.record) setLiveData(json.record);
+      } catch (e) { console.log("Using mock data — JSONBin fetch failed"); }
+    };
+    fetchLive();
+    const iv = setInterval(fetchLive, 30000); // refresh every 30 sec
+    return () => clearInterval(iv);
+  }, []);
 
-  // ── SCAN LABEL ROTATION ──
+  const mergedData = liveData ? {
+    ...REAL_DATA,
+    metrics: {
+      applied: liveData.total_applied || REAL_DATA.metrics.applied,
+      pipe: liveData.in_pipeline || REAL_DATA.metrics.pipe,
+      resp: parseFloat(liveData.response_rate) || REAL_DATA.metrics.resp,
+      intv: liveData.interviews || REAL_DATA.metrics.intv,
+      prob: liveData.offer_probability || REAL_DATA.metrics.prob,
+    }
+  } : REAL_DATA;
+
+  const D = demo ? DEMO_DATA : mergedData;
+
+  useEffect(() => { const iv = setInterval(() => setScanIdx(p => (p + 1) % BOARDS.length), 2800); return () => clearInterval(iv); }, []);
+  useEffect(() => { const t = setTimeout(() => setToast("Deloitte recruiter replied — BLUE drafted a response for your approval"), 5000); return () => clearTimeout(t); }, []);
   useEffect(() => {
-    let i = 0
-    const id = setInterval(() => {
-      i = (i+1) % BOARDS.length
-      setScanLabel(`scanning ${BOARDS[i]}...`)
-    }, 2800)
-    return () => clearInterval(id)
-  }, [])
+    const h = (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); setCmdOpen(p => !p); } if (e.key === "Escape") setCmdOpen(false); };
+    window.addEventListener("keydown", h); return () => window.removeEventListener("keydown", h);
+  }, []);
+  useEffect(() => { chatEnd.current?.scrollIntoView({ behavior: "smooth" }); }, [chatHist]);
 
-  // ── COUNTDOWN ──
-  useEffect(() => {
-    function calc() {
-      const tgt = new Date('2026-04-07T10:00:00')
-      const d = tgt - new Date()
-      if(d<=0){ setCountdown('NOW'); return }
-      const days=Math.floor(d/864e5), hrs=Math.floor((d%864e5)/36e5), mins=Math.floor((d%36e5)/6e4)
-      setCountdown(`${days}d ${hrs}h ${mins}m`)
-    }
-    calc()
-    const id = setInterval(calc, 60000)
-    return () => clearInterval(id)
-  }, [])
+  const sendChat = useCallback(() => {
+    if (!chatMsg.trim()) return;
+    setChatHist(p => [...p, { f: "u", t: chatMsg }]);
+    const m = chatMsg.toLowerCase(); setChatMsg("");
+    setTimeout(() => {
+      let r = "Processing. Check Telegram for detailed results.";
+      if (m.includes("status")) r = `BLUE v3.0 | ${status} | 6/6 WF | 127 applied | 23 pipeline | 5 interviews | Offer prob: 73%`;
+      else if (m.includes("handshake")) r = "Scanning byui.joinhandshake.com... Found 3 new cybersecurity internships. Top: Raytheon Security Intern (ATS: 87, 16/19 keywords). Want me to apply?";
+      else if (m.includes("interview") || m.includes("prep")) r = "Next: CrowdStrike SOC Analyst I — Apr 7, 10:00 AM (Video). Prep: 85%. Missing: mock sim #2. Run it now?";
+      else if (m.includes("offer")) r = "Palo Alto Networks Security Intern — $42/hr, hybrid. 85th percentile for intern comp. Deadline: Apr 10. Recommend counter with housing stipend.";
+      else if (m.includes("brief")) r = "Pipeline: 23 active. 2 new recruiter emails (positive sentiment). Top action: Complete Google interview prep (40%). 3 new Handshake matches.";
+      else if (m.includes("confetti")) { setConfetti(true); setTimeout(() => setConfetti(false), 3500); r = "Celebrating!"; }
+      setChatHist(p => [...p, { f: "b", t: r }]);
+    }, 700);
+  }, [chatMsg, status]);
 
-  // ── SPACE CANVAS ──
-  useEffect(() => {
-    const cv = canvasRef.current
-    if(!cv) return
-    const ctx = cv.getContext('2d')
-    let W, H, stars=[], shooters=[], t=0, pA=0
-    let animId
+  const tabs = [
+    { id: "overview", l: "Overview", I: Target },
+    { id: "pipeline", l: "Pipeline", I: Briefcase },
+    { id: "interviews", l: "Interviews", I: Calendar },
+    { id: "offers", l: "Offers", I: Award },
+  ];
 
-    function resize() {
-      W=cv.width=innerWidth; H=cv.height=innerHeight
-      initStars()
-    }
-    function initStars() {
-      stars=[]
-      for(let i=0;i<250;i++) stars.push({x:Math.random()*W,y:Math.random()*H,r:.25+Math.random()*.4,v:.04+Math.random()*.06,a:.3+Math.random()*.4,p:Math.random()*6.28,ps:.008+Math.random()*.012,hue:200+Math.random()*40})
-      for(let i=0;i<120;i++) stars.push({x:Math.random()*W,y:Math.random()*H,r:.6+Math.random()*.8,v:.08+Math.random()*.1,a:.5+Math.random()*.35,p:Math.random()*6.28,ps:.012+Math.random()*.018,hue:210+Math.random()*30})
-      for(let i=0;i<50;i++) stars.push({x:Math.random()*W,y:Math.random()*H,r:1.2+Math.random()*1.4,v:.18+Math.random()*.12,a:.7+Math.random()*.25,p:Math.random()*6.28,ps:.018+Math.random()*.025,hue:215+Math.random()*25})
-    }
-
-    function drawPlanet() {
-      pA+=0.00008
-      const pX=W*.72, pY=H*.38, pR=Math.min(W,H)*.28
-      const cx=pX+Math.sin(pA*.3)*12, cy=pY+Math.sin(pA*.2)*8
-      ctx.save()
-      const atm=ctx.createRadialGradient(cx,cy,pR*.7,cx,cy,pR*1.35)
-      atm.addColorStop(0,'rgba(180,80,20,0)'); atm.addColorStop(.6,'rgba(180,80,20,0.025)'); atm.addColorStop(1,'rgba(100,40,10,0)')
-      ctx.fillStyle=atm; ctx.beginPath(); ctx.arc(cx,cy,pR*1.35,0,Math.PI*2); ctx.fill()
-      const pg=ctx.createRadialGradient(cx-pR*.28,cy-pR*.25,pR*.08,cx,cy,pR)
-      pg.addColorStop(0,'#c87040'); pg.addColorStop(.15,'#b05c2a'); pg.addColorStop(.35,'#8a3f18'); pg.addColorStop(.6,'#6b2e10'); pg.addColorStop(.8,'#4a200a'); pg.addColorStop(1,'#1a0804')
-      ctx.beginPath(); ctx.arc(cx,cy,pR,0,Math.PI*2); ctx.fillStyle=pg; ctx.fill()
-      ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,pR,0,Math.PI*2); ctx.clip()
-      const sh=ctx.createRadialGradient(cx+pR*.3,cy,0,cx+pR*.3,cy,pR*1.1)
-      sh.addColorStop(0,'rgba(0,0,0,0)'); sh.addColorStop(.55,'rgba(0,0,0,0)'); sh.addColorStop(.75,'rgba(0,0,0,0.45)'); sh.addColorStop(1,'rgba(0,0,0,0.9)')
-      ctx.fillStyle=sh; ctx.beginPath(); ctx.arc(cx,cy,pR,0,Math.PI*2); ctx.fill()
-      ctx.restore()
-      ctx.restore()
-    }
-
-    function drawStars() {
-      stars.forEach(s=>{
-        s.p+=s.ps; s.y+=s.v
-        if(s.y>H) s.y=0
-        const a=s.a*(0.65+Math.sin(s.p)*.35)
-        const gg=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*3)
-        gg.addColorStop(0,`hsla(${s.hue},20%,95%,${a*.5})`); gg.addColorStop(1,`hsla(${s.hue},20%,80%,0)`)
-        ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(s.x,s.y,s.r*3,0,Math.PI*2); ctx.fill()
-        ctx.fillStyle=`hsla(${s.hue},20%,96%,${a})`; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill()
-      })
-    }
-
-    function drawShooters() {
-      if(Math.random()<.0025) shooters.push({x:Math.random()*W*.65,y:Math.random()*H*.45,vx:9+Math.random()*10,vy:3+Math.random()*5,life:1,decay:.025+Math.random()*.02})
-      shooters=shooters.filter(s=>{
-        s.x+=s.vx; s.y+=s.vy; s.life-=s.decay
-        if(s.life<=0) return false
-        const tl=ctx.createLinearGradient(s.x-s.vx*5,s.y-s.vy*5,s.x,s.y)
-        tl.addColorStop(0,'rgba(255,255,255,0)'); tl.addColorStop(1,`rgba(210,240,255,${s.life*.75})`)
-        ctx.strokeStyle=tl; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(s.x-s.vx*5,s.y-s.vy*5); ctx.lineTo(s.x,s.y); ctx.stroke()
-        return true
-      })
-    }
-
-    function draw() {
-      ctx.fillStyle='#000408'; ctx.fillRect(0,0,W,H)
-      const bg=ctx.createRadialGradient(W*.5,H*.3,0,W*.5,H*.3,W*.8)
-      bg.addColorStop(0,'rgba(0,6,25,.65)'); bg.addColorStop(.6,'rgba(0,3,12,.3)'); bg.addColorStop(1,'rgba(0,1,5,0)')
-      ctx.fillStyle=bg; ctx.fillRect(0,0,W,H)
-      drawPlanet(); drawStars(); drawShooters()
-      t++; animId=requestAnimationFrame(draw)
-    }
-    resize(); addEventListener('resize',resize); draw()
-    return () => { cancelAnimationFrame(animId); removeEventListener('resize',resize) }
-  }, [])
-
-  // ── CHARTS ──
-  useEffect(() => {
-    if(activeTab !== 'overview') return
-    const grid={color:'rgba(255,255,255,.04)'}
-    const tick={color:'#374151',font:{family:'JetBrains Mono',size:9}}
-    const wCtx = document.getElementById('cW')
-    const bCtx = document.getElementById('cB')
-    if(!wCtx || !bCtx) return
-    if(wChartRef.current) wChartRef.current.destroy()
-    if(bChartRef.current) bChartRef.current.destroy()
-    wChartRef.current = new Chart(wCtx,{type:'line',data:{labels:['W1','W2','W3','W4','W5','W6','W7','W8'],datasets:[{data:D.w,borderColor:'#00D4FF',borderWidth:2.5,pointBackgroundColor:'#00D4FF',pointRadius:3,tension:.4,fill:true,backgroundColor:(ctx)=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,140);g.addColorStop(0,'rgba(0,212,255,.22)');g.addColorStop(1,'rgba(0,212,255,0)');return g;}}]},options:{plugins:{legend:{display:false}},scales:{x:{grid,ticks:tick},y:{grid,ticks:tick}},animation:{duration:900}}})
-    bChartRef.current = new Chart(bCtx,{type:'bar',data:{labels:D.b.map(b=>b.b),datasets:[{data:D.b.map(b=>b.i),backgroundColor:D.b.map(b=>b.c),borderRadius:6,borderSkipped:false}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid,ticks:tick},y:{grid:{display:false},ticks:tick}},animation:{duration:900}}})
-    return () => {
-      if(wChartRef.current) wChartRef.current.destroy()
-      if(bChartRef.current) bChartRef.current.destroy()
-    }
-  }, [activeTab, demoMode])
-
-  // ── UNLOCK TOAST ──
-  function unlock() {
-    setLocked(false)
-    setTimeout(()=>addToast('🔔 Deloitte recruiter replied — BLUE drafted response for approval','urg'), 3500)
-  }
-
-  // ── TOAST ──
-  function addToast(msg, type='inf') {
-    const id = Date.now()
-    setToasts(prev=>[...prev,{id,msg,type}])
-    setTimeout(()=>setToasts(prev=>prev.filter(t=>t.id!==id)), 6500)
-  }
-
-  // ── CHAT ──
-  function sendMsg() {
-    if(!chatInput.trim()) return
-    const msg = chatInput.trim()
-    setChatInput('')
-    setMessages(prev=>[...prev,{text:msg,from:'usr'}])
-    setTimeout(()=>{
-      const m=msg.toLowerCase()
-      let r='Processing your request. Check Telegram for results.'
-      if(m.includes('status')) r='BLUE v3.0 | ONLINE | 6/6 WF | 127 applied | 23 pipeline | 5 interviews | Offer prob: 73%'
-      else if(m.includes('handshake')) r='Scanning byui.joinhandshake.com... 3 new cybersecurity internships. Top: Raytheon (ATS: 87). Apply?'
-      else if(m.includes('interview')||m.includes('prep')) r='Next: CrowdStrike SOC Analyst I — Apr 7, 10:00 AM (Video). Prep: 85%. Run mock sim now?'
-      else if(m.includes('offer')) r='Palo Alto Networks — $42/hr, hybrid. 85th percentile. Deadline Apr 10. Counter with housing stipend.'
-      else if(m.includes('brief')) r='23 active. 2 positive recruiter replies. CrowdStrike prep 85%. Google prep 40% — needs attention. 3 Handshake matches queued.'
-      else if(m.includes('deloitte')) r='Deloitte: "We are interested in your profile. Can you do a 30-min call this week?" — Draft reply ready for your approval on Telegram.'
-      setMessages(prev=>[...prev,{text:r,from:'bot'}])
-    }, 650)
-  }
-
-  function runBrief() {
-    setMessages(prev=>[...prev,{text:'📊 Brief: 23 active apps. Deloitte replied (URGENT). Google screening (positive). CrowdStrike interview Apr 7 (prep 85%). Palo Alto offer deadline Apr 10. 3 Handshake matches. Priority: Google prep (40%).',from:'bot'}])
-    setChatOpen(true)
-  }
-
-  // ── N8N TEST ──
-  async function testN8n() {
-    const url = document.getElementById('cN8')?.value
-    const wb = document.getElementById('cWD')?.value
-    if(!url||!wb){ addToast('Enter your n8n URL and webhook path first','wrn'); return }
-    setN8nStatus('wn'); setN8nStatusText('⏳ Testing...')
-    try {
-      const res = await fetch(url+wb,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ping:true}),signal:AbortSignal.timeout(5000)})
-      if(res.ok){ setN8nStatus('ok'); setN8nStatusText('✅ Connected'); addToast('✅ n8n connection successful!','inf') }
-      else{ setN8nStatus('er'); setN8nStatusText('❌ Error '+res.status) }
-    } catch(e){ setN8nStatus('er'); setN8nStatusText('❌ Failed'); addToast('❌ Could not reach n8n. Check your URL.','wrn') }
-  }
-
-  // ── SAVE CONFIG ──
-  function saveAll() {
-    const g = id => document.getElementById(id)?.value||''
-    const cfg = {name:g('cN'),photo:g('cPh'),role:g('cR'),school:g('cSc'),hs:g('cHs'),skills:g('cSk'),n8n:g('cN8'),whC:g('cWC'),whJ:g('cWJ'),whD:g('cWD'),tgT:g('cTT'),tgI:g('cTI'),tgTo:g('cTO'),mode:g('cMd'),ats:g('cAt'),max:g('cMx'),dream:g('cDr'),dreamF:g('cDF'),ant:g('cAn'),oai:g('cOa'),gem:g('cGe'),pine:g('cPi'),sh:g('cSh')}
-    localStorage.setItem('blue_cfg', JSON.stringify(cfg))
-    if(cfg.photo) setPhotoUrl(cfg.photo)
-    addToast('✅ Configuration saved!','inf')
-  }
-
-  // ── CELEBRATE ──
-  function celebrate() {
-    const cols=['#00D4FF','#00E676','#FFD600','#FF5252','#B06EFF','#FF8C42']
-    for(let i=0;i<80;i++){
-      const el=document.createElement('div'); el.className='cfp'
-      el.style.cssText=`width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;left:${Math.random()*100}%;background:${cols[i%6]};animation-name:cfall;animation-duration:${2+Math.random()*2.5}s;animation-delay:${Math.random()*1.2}s;border-radius:${Math.random()>.5?'50%':'2px'}`
-      document.body.appendChild(el); setTimeout(()=>el.remove(),5000)
-    }
-    addToast('🎉 OFFER ACCEPTED! Congratulations Joseph!','urg')
-  }
-
-  // ── GAUGE ──
-  const prob = D.m.prob
-  const gaugeColor = prob>=70?'#00E676':prob>=40?'#FFB300':'#FF5252'
-  const r=64, circ=2*Math.PI*r*.75, off=circ-(prob/100)*circ
-
-  // ── HEATMAP ──
-  const heatCells = Array.from({length:56},()=>Math.floor(Math.random()*5))
-  const heatColors = ['rgba(255,255,255,.04)','rgba(0,212,255,.14)','rgba(0,212,255,.32)','rgba(0,212,255,.58)','rgba(0,212,255,.85)']
+  const mono = { fontFamily: "'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Fira Code', monospace" };
+  const label = "text-[7px] uppercase tracking-[0.25em] text-gray-600";
 
   return (
-    <>
-      <canvas ref={canvasRef} id="cv"></canvas>
+    <div className="min-h-screen text-white relative overflow-hidden" style={{ background: "linear-gradient(155deg, #020810 0%, #041225 25%, #081a38 55%, #040e1e 100%)" }}>
+      <CyberBG />
 
-      {/* LOCK SCREEN */}
-      <div id="lock" className={locked?'':'out'} onClick={unlock}>
-        <div className="lock-bg"></div>
-        <div className="lock-body">
-          <div style={{textAlign:'center',marginBottom:'4px'}}>
-            <div style={{display:'inline-flex',alignItems:'flex-start',gap:'2px'}}>
-              <span className="lk-clock">{clock.h}</span>
-              <span className="lk-clock" style={{opacity:.4,marginTop:'6px'}}>:</span>
-              <span className="lk-clock">{clock.m}</span>
-              <span className="lk-sec">:{clock.s}</span>
-            </div>
-            <div className="lk-date">{clock.date}</div>
-          </div>
-          <div className="lk-av-ring">
-            <div className="lk-av">
-              {photoUrl ? <img src={photoUrl} alt="Joseph"/> : 'JK'}
-            </div>
-          </div>
-          <div className="lk-greet" dangerouslySetInnerHTML={{__html:clock.greet.replace('Joseph!','<em>Joseph!</em>')}}></div>
-          <div className="lk-sub">BLUE v3.0 — Working while you sleep</div>
-          <div className="lk-info">
-            <div className="lpill">📍 {location}</div>
-            <div className="lpill">{weather.icon} {weather.temp}</div>
-            <div className="lpill">🕐 MDT UTC-6</div>
-          </div>
-          <div className="lk-notifs">
-            <div className="np urg"><div className="blink"></div>📧 Deloitte recruiter replied — action needed</div>
-            <div className="np inf" style={{animationDelay:'.1s'}}>💼 3 new Handshake cybersecurity matches</div>
-            <div className="np inf" style={{animationDelay:'.2s'}}>📅 CrowdStrike interview in 5 days</div>
-            <div className="np wrn" style={{animationDelay:'.3s'}}>⚠️ Palo Alto offer deadline: April 10</div>
-          </div>
-          <div className="lk-hint">⬆ Click anywhere to enter BLUE</div>
-        </div>
-      </div>
+      {/* ── Confetti ── */}
+      {confetti && <div className="fixed inset-0 z-[90] pointer-events-none">
+        {Array.from({ length: 55 }, (_, i) => (
+          <div key={i} className="absolute rounded-sm"
+            style={{ width: 6 + Math.random() * 4, height: 6 + Math.random() * 4, left: `${Math.random() * 100}%`, top: "-3%",
+              background: ["#0096FF", "#00C853", "#FFB300", "#E53935", "#7B2FBE", "#00B4D8"][i % 6],
+              animation: `confettiFall ${2 + Math.random() * 2.5}s ${Math.random() * 1.5}s ease-in forwards` }} />
+        ))}
+      </div>}
 
-      {/* MAIN APP */}
-      <div id="app" className={locked?'':'show'}>
-        <div id="scroll">
-
-          {/* HEADER */}
-          <div className="hdr">
-            <div className="hdr-l">
-              <div className="hdr-ico">🛡</div>
-              <div>
-                <div className="hdr-name">BLUE <em>v3.0</em></div>
-                <div className="hdr-st">
-                  <div className="pdot"></div>
-                  <span className="sok">ONLINE</span>
-                  <span style={{color:'#2d3748'}}>·</span>
-                  <span className="scn">{scanLabel}</span>
-                </div>
-              </div>
-            </div>
-            <div className="hdr-r">
-              <button className={`hbtn${demoMode?' on':''}`} onClick={()=>{setDemoMode(!demoMode);addToast(demoMode?'Live mode ON':'Demo mode ON — fake data displayed','inf')}}>👁 {demoMode?'Live':'Demo'}</button>
-              <button className="hbtn" onClick={runBrief}>⚡ Brief</button>
-              <button className="hbtn" onClick={()=>setLocked(true)}>🔒</button>
-            </div>
-          </div>
-
-          {/* TABS */}
-          <div className="tabs">
-            {['overview','pipeline','interviews','offers','config'].map((tab,i)=>(
-              <button key={tab} className={`tab${activeTab===tab?' act':''}`} onClick={()=>setActiveTab(tab)}>
-                {['📊 Overview','💼 Pipeline','📅 Interviews','🏆 Offers','⚙️ Config'][i]}
-                {tab==='offers'&&<span className="tbn"></span>}
-              </button>
-            ))}
-          </div>
-
-          {/* OVERVIEW */}
-          {activeTab==='overview'&&(
-            <div className="page">
-              {/* Insights */}
-              <div className="ins-row">
-                {[
-                  {ico:'🎯',val:`${prob}%`,lbl:'Offer Probability',col:'var(--c)',bg:'rgba(0,212,255,.1)',bc:'rgba(0,212,255,.25)'},
-                  {ico:'⭐',val:'94',lbl:'Top ATS Score',col:'var(--g)',bg:'rgba(0,230,118,.1)',bc:'rgba(0,230,118,.25)'},
-                  {ico:'🤖',val:'22',lbl:'Boards Active',col:'var(--p)',bg:'rgba(176,110,255,.1)',bc:'rgba(176,110,255,.25)'},
-                  {ico:'📬',val:'$42',lbl:'Best Offer/hr',col:'var(--o)',bg:'rgba(255,140,66,.1)',bc:'rgba(255,140,66,.25)'},
-                  {ico:'🔥',val:'8',lbl:'Day Streak',col:'var(--pk)',bg:'rgba(255,107,157,.1)',bc:'rgba(255,107,157,.25)'},
-                ].map((ic,i)=>(
-                  <div key={i} className="ic" style={{background:`linear-gradient(135deg,${ic.bg},rgba(3,10,32,.8))`,borderColor:ic.bc}}>
-                    <div style={{fontSize:'22px',marginBottom:'8px'}}>{ic.ico}</div>
-                    <div className="icv" style={{color:ic.col}}>{ic.val}</div>
-                    <div className="icl">{ic.lbl}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Metrics */}
-              <div className="metrics">
-                <div className="mc mcC"><div className="mi">📤</div><div className="mv">{D.m.applied}</div><div className="ml">Applied</div><div className="mt" style={{background:'rgba(0,212,255,.1)',color:'var(--c)'}}>+8% ↑</div></div>
-                <div className="mc mcP"><div className="mi">💼</div><div className="mv">{D.m.pipe}</div><div className="ml">Pipeline</div></div>
-                <div className="mc mcG"><div className="mi">📅</div><div className="mv">{D.m.intv}</div><div className="ml">Interviews</div></div>
-                <div className="mc mcO"><div className="mi">📈</div><div className="mv">{D.m.resp}</div><div className="ml">Response Rate</div></div>
-              </div>
-
-              {/* Gauge + Heatmap */}
-              <div className="g2">
-                <div className="gl gw p5">
-                  <div className="gw-wrap">
-                    <svg width="160" height="160" viewBox="0 0 160 160" style={{transform:'rotate(-135deg)'}}>
-                      <circle cx="80" cy="80" r="64" fill="none" stroke="rgba(255,255,255,.05)" strokeWidth="9" strokeDasharray="301.6" strokeLinecap="round"/>
-                      <circle cx="80" cy="80" r="64" fill="none" stroke={gaugeColor} strokeWidth="9" strokeDasharray="301.6" strokeDashoffset={off} strokeLinecap="round" style={{filter:`drop-shadow(0 0 14px ${gaugeColor}80)`,transition:'all 1.5s ease'}}/>
-                    </svg>
-                    <div style={{textAlign:'center',marginTop:'8px'}}>
-                      <div className="gv" style={{color:gaugeColor,textShadow:`0 0 25px ${gaugeColor}50`}}>{prob}%</div>
-                      <div className="gs">Offer Probability</div>
-                    </div>
-                  </div>
-                  <div style={{textAlign:'center',fontSize:'8px',color:'#2d3748',letterSpacing:'.2em',marginTop:'-5px'}}>VELOCITY · MARKET · PIPELINE</div>
-                </div>
-                <div className="gl p5">
-                  <div className="lbl">Application Heatmap (8 weeks)</div>
-                  <div className="hm">
-                    {heatCells.map((v,i)=><div key={i} className="hc" style={{background:heatColors[v]}}></div>)}
-                  </div>
-                  <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:'4px',marginTop:'9px'}}>
-                    <span style={{fontSize:'8px',color:'#2d3748'}}>Low</span>
-                    {['.1','.3','.55','.85'].map((o,i)=><div key={i} style={{width:'9px',height:'9px',borderRadius:'2px',background:`rgba(0,212,255,${o})`}}></div>)}
-                    <span style={{fontSize:'8px',color:'#2d3748'}}>High</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Charts */}
-              <div className="g2">
-                <div className="gl p5 mb14"><div className="lbl">Weekly Applications</div><div className="cb"><canvas id="cW"></canvas></div></div>
-                <div className="gl p5 mb14"><div className="lbl">Board Performance</div><div className="cb"><canvas id="cB"></canvas></div></div>
-              </div>
-
-              {/* Activity */}
-              <div className="gl p5 mb14">
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'11px'}}>
-                  <div className="lbl">Live Activity</div>
-                  <span style={{fontSize:'9px',padding:'3px 9px',borderRadius:'20px',background:'rgba(0,212,255,.09)',color:'var(--c)',border:'1px solid rgba(0,212,255,.2)',fontFamily:'var(--mono)'}}>→ {scanLabel}</span>
-                </div>
-                {D.act.map((a,i)=>{
-                  const col=AC[a.tp]||'#9ca3af'
-                  return(
-                    <div key={i} className="ai" style={{borderLeftColor:`${col}45`,animation:`siu .3s ease ${i*.06}s both`}}>
-                      <div className="aico" style={{background:`${col}15`,border:`1px solid ${col}28`}}>{a.i}</div>
-                      <div><div className="at">{a.a}</div><div className="atm">{a.t}</div></div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* PIPELINE */}
-          {activeTab==='pipeline'&&(
-            <div className="page">
-              <div className="pipeline">
-                {D.pipeline.map((s,si)=>(
-                  <div key={si} className="scol">
-                    <div className="shd">
-                      <div className="sdot" style={{background:s.col,boxShadow:`0 0 8px ${s.col}`}}></div>
-                      <span className="snm">{s.stage}</span>
-                      <span className="sct">{s.items.length}</span>
-                    </div>
-                    {s.items.map((it,ii)=>{
-                      const ac=it.ats>=90?'#00E676':it.ats>=80?'#00D4FF':'#FFB300'
-                      return(
-                        <div key={ii} className="kc">
-                          <div className="kco">{it.co}</div>
-                          <div className="kro">{it.ro}</div>
-                          <div className="abadge" style={{color:ac,background:`${ac}18`}}>{it.ats} ATS</div>
-                          <span style={{fontSize:'8px',color:'#2d3748',marginLeft:'5px'}}>{it.kw}</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* INTERVIEWS */}
-          {activeTab==='interviews'&&(
-            <div className="page">
-              <div className="gl ga p5 mb14" style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'12px'}}>
-                <div>
-                  <div className="lbl" style={{marginBottom:'5px'}}>Next Interview</div>
-                  <div style={{fontFamily:'var(--dsp)',fontSize:'20px',fontWeight:900}}>{D.iv[0]?.co}</div>
-                  <div style={{fontSize:'12px',color:'#6b7280',marginTop:'2px'}}>{D.iv[0]?.ro}</div>
-                </div>
-                <div style={{textAlign:'right'}}>
-                  <div className="lbl" style={{marginBottom:'4px'}}>Countdown</div>
-                  <div className="cd">{countdown}</div>
-                </div>
-              </div>
-              {D.iv.map((iv,i)=>{
-                const pc=iv.prep>=80?'#00E676':iv.prep>=50?'#FFB300':'#FF5252'
-                const pb=iv.prep>=80?'linear-gradient(90deg,#00C853,#00E676)':iv.prep>=50?'linear-gradient(90deg,#E65100,#FFB300)':'linear-gradient(90deg,#B71C1C,#FF5252)'
-                return(
-                  <div key={i} className={`gl${i===0?' gw':''} ivw mb14`}>
-                    <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:'14px'}}>
-                      <div>
-                        <span className={`ivb${iv.type==='Video'?' vid':' ons'}`}>{iv.type}</span>
-                        <div style={{fontSize:'9px',color:'#374151',marginBottom:'5px',fontFamily:'var(--mono)'}}>{iv.date} · {iv.time}</div>
-                        <div className="ivco">{iv.co}</div>
-                        <div className="ivro">{iv.ro}</div>
-                      </div>
-                      <div style={{fontSize:'11px'}}>⭐ <strong style={{color:'#FFD600'}}>{iv.culture}</strong></div>
-                    </div>
-                    <div style={{marginBottom:'12px'}}>
-                      <div style={{display:'flex',justifyContent:'space-between',marginBottom:'5px',fontSize:'9px'}}>
-                        <span style={{color:'#374151',textTransform:'uppercase',letterSpacing:'.15em',fontFamily:'var(--mono)'}}>Prep Progress</span>
-                        <span style={{color:pc,fontWeight:700,fontFamily:'var(--mono)'}}>{iv.prep}%</span>
-                      </div>
-                      <div className="prb"><div className="prf" style={{width:`${iv.prep}%`,background:pb,boxShadow:`0 0 8px ${pc}40`}}></div></div>
-                    </div>
-                    {(iv.wx||iv.cm)&&<div className="inr">{iv.wx&&<div className="inp">☁️ {iv.wx}</div>}{iv.cm&&<div className="inp">🚗 {iv.cm}</div>}</div>}
-                    {iv.link
-                      ?<a href={iv.link} target="_blank" rel="noreferrer" className="mba-btn mbg" style={{textDecoration:'none',justifyContent:'center',width:'100%',marginTop:'8px'}}>🎥 Join Video Call</a>
-                      :(iv.addr&&<>
-                        <div style={{fontSize:'9px',color:'#374151',marginBottom:'6px'}}>{iv.addr}</div>
-                        <div className="mbs">
-                          <a href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(iv.addr)}`} target="_blank" rel="noreferrer" className="mba-btn mbg">📍 Google</a>
-                          <a href={`https://maps.apple.com/?daddr=${encodeURIComponent(iv.addr)}`} target="_blank" rel="noreferrer" className="mba-btn mba">🗺 Apple</a>
-                        </div>
-                      </>)
-                    }
-                    {i===0&&(
-                      <div style={{background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.06)',borderRadius:'13px',padding:'13px',marginTop:'12px'}}>
-                        <div className="lbl" style={{marginBottom:'9px'}}>Interview Day Checklist</div>
-                        <div className="chklist">
-                          {D.chk.map((c,ci)=>(
-                            <div key={ci} className="chi">
-                              <div className={`chb${c.d?' dn':''}`}>{c.d?'✓':''}</div>
-                              <span className={`cht${c.d?' dn':''}`}>{c.t}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          )}
-
-          {/* OFFERS */}
-          {activeTab==='offers'&&(
-            <div className="page">
-              {D.offers.length===0
-                ?<div className="gl p5" style={{textAlign:'center',padding:'60px 20px'}}><div style={{fontSize:'40px',marginBottom:'12px'}}>🏆</div><div style={{color:'#374151'}}>No offers yet. Keep going.</div></div>
-                :D.offers.map((o,i)=>{
-                  const enc=encodeURIComponent(o.addr)
-                  const pts=[];for(let j=0;j<50;j++){const x=j/49*100,z=(x-50)/15,y=Math.exp(-z*z/2)*100;pts.push({x,y})}
-                  const dPath=pts.map((p,j)=>`${j===0?'M':'L'}${p.x*2.6} ${90-p.y*.7}`).join(' ')
-                  const cx=o.pct*2.6,cy=90-Math.exp(-Math.pow((o.pct-50)/15,2)/2)*70
-                  return(
-                    <div key={i} className="gl og p5 mb14">
-                      <div style={{display:'flex',alignItems:'center',gap:'7px',marginBottom:'14px'}}>
-                        <div style={{width:'8px',height:'8px',borderRadius:'50%',background:'var(--g)',boxShadow:'0 0 8px var(--g)',animation:'pd 2s infinite'}}></div>
-                        <span style={{fontSize:'9px',color:'var(--g)',textTransform:'uppercase',letterSpacing:'.3em',fontWeight:700,fontFamily:'var(--mono)'}}>Active Offer</span>
-                      </div>
-                      <div style={{fontFamily:'var(--dsp)',fontSize:'22px',fontWeight:900}}>{o.co}</div>
-                      <div style={{fontSize:'12px',color:'#6b7280',marginTop:'3px'}}>{o.ro}</div>
-                      <div className="ofg">
-                        <div className="of" style={{background:'rgba(0,230,118,.07)',border:'1px solid rgba(0,230,118,.22)'}}><div className="ofl" style={{color:'rgba(0,230,118,.6)'}}>Compensation</div><div className="ofv" style={{color:'var(--g)'}}>{o.sal}</div></div>
-                        <div className="of" style={{background:'rgba(0,212,255,.06)',border:'1px solid rgba(0,212,255,.2)'}}><div className="ofl" style={{color:'rgba(0,212,255,.6)'}}>Start Date</div><div className="ofv" style={{color:'var(--c)'}}>{o.start}</div></div>
-                        <div className="of" style={{background:'rgba(176,110,255,.07)',border:'1px solid rgba(176,110,255,.2)'}}><div className="ofl" style={{color:'rgba(176,110,255,.6)'}}>Work Mode</div><div className="ofv" style={{color:'var(--p)',fontSize:'11px'}}>{o.remote}</div></div>
-                        <div className="of" style={{background:'rgba(255,82,82,.06)',border:'1px solid rgba(255,82,82,.2)'}}><div className="ofl" style={{color:'rgba(255,82,82,.6)'}}>Deadline</div><div className="ofv" style={{color:'var(--r)'}}>{o.dl}</div></div>
-                      </div>
-                      <div style={{background:'rgba(0,212,255,.04)',border:'1px solid rgba(0,212,255,.12)',borderRadius:'13px',padding:'13px',marginBottom:'11px'}}>
-                        <div style={{display:'flex',justifyContent:'space-between',marginBottom:'7px',fontSize:'9px'}}>
-                          <span style={{color:'#374151',textTransform:'uppercase',letterSpacing:'.2em',fontFamily:'var(--mono)'}}>Market Position</span>
-                          <span style={{color:'var(--g)',fontWeight:700,fontFamily:'var(--mono)'}}>{o.pct}th percentile</span>
-                        </div>
-                        <svg viewBox="0 0 260 95" style={{width:'100%',height:'60px'}}>
-                          <path d={dPath} fill="none" stroke="rgba(0,212,255,.35)" strokeWidth="2"/>
-                          <path d={`${dPath} L260 90 L0 90 Z`} fill="rgba(0,212,255,.06)"/>
-                          <line x1={cx} y1="5" x2={cx} y2="90" stroke="#00E676" strokeWidth="2" strokeDasharray="4 3"/>
-                          <circle cx={cx} cy={cy} r="5" fill="#00E676" style={{filter:'drop-shadow(0 0 6px #00E67680)'}}/>
-                        </svg>
-                        <div style={{display:'flex',justifyContent:'space-between',fontSize:'8px',color:'#374151',fontFamily:'var(--mono)'}}>
-                          <span>$30K</span><span>$55K</span><span>$80K</span><span>$105K</span><span>$130K</span>
-                        </div>
-                      </div>
-                      <div style={{background:'rgba(255,255,255,.03)',border:'1px solid var(--br)',borderRadius:'13px',padding:'13px',marginBottom:'11px'}}>
-                        <div className="lbl" style={{marginBottom:'5px'}}>Benefits</div>
-                        <div style={{fontSize:'11px',color:'#9ca3af',lineHeight:1.6}}>{o.benefits}</div>
-                      </div>
-                      <div style={{background:'rgba(255,255,255,.03)',border:'1px solid var(--br)',borderRadius:'13px',padding:'13px'}}>
-                        <div style={{display:'flex',alignItems:'center',gap:'7px',marginBottom:'7px'}}><span>📍</span><strong style={{fontSize:'11px'}}>Office Location</strong></div>
-                        <div style={{fontSize:'10px',color:'#374151',marginBottom:'7px'}}>{o.addr}</div>
-                        <div className="mbs">
-                          <a href={`https://www.google.com/maps/dir/?api=1&destination=${enc}`} target="_blank" rel="noreferrer" className="mba-btn mbg">📍 Google Maps</a>
-                          <a href={`https://maps.apple.com/?daddr=${enc}`} target="_blank" rel="noreferrer" className="mba-btn mba">🗺 Apple Maps</a>
-                        </div>
-                        <div className="mpe"><iframe src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${enc}&zoom=14`} allowFullScreen loading="lazy" title="map"></iframe></div>
-                      </div>
-                      <div className="abts">
-                        <button className="abt abtA" onClick={celebrate}>✅ Accept Offer</button>
-                        <button className="abt abtN">↗ Negotiate</button>
-                      </div>
-                    </div>
-                  )
-                })
-              }
-            </div>
-          )}
-
-          {/* CONFIG */}
-          {activeTab==='config'&&(
-            <div className="page">
-              <div className="cgrid">
-                <div className="gl csec">
-                  <div className="ctit">👤 Your Profile</div>
-                  <div className="fd"><label>Full Name</label><input id="cN" placeholder="Joseph Kamara"/></div>
-                  <div className="fd"><label>Your Photo URL</label><input id="cPh" placeholder="https://your-photo-url.jpg" onChange={e=>setPhotoUrl(e.target.value)}/></div>
-                  <div className="fd"><label>Target Role</label><input id="cR" placeholder="SOC Analyst / Cybersecurity Intern"/></div>
-                  <div className="fd"><label>University</label><input id="cSc" placeholder="BYU-Idaho"/></div>
-                  <div className="fd"><label>Handshake URL</label><input id="cHs" placeholder="byui.joinhandshake.com"/></div>
-                  <div className="fd"><label>Key Skills</label><textarea id="cSk" placeholder="Splunk, SIEM, Python, Incident Response..."></textarea></div>
-                </div>
-                <div className="gl csec">
-                  <div className="ctit">⚡ n8n Connection</div>
-                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'12px'}}>
-                    <span style={{fontSize:'10px',color:'#9ca3af'}}>Status</span>
-                    <span className={`sbg ${n8nStatus}`}>{n8nStatusText}</span>
-                  </div>
-                  <div className="fd"><label>n8n Base URL</label><input id="cN8" placeholder="https://joeallan.app.n8n.cloud"/></div>
-                  <div className="fd"><label>Command Webhook</label><input id="cWC" placeholder="/webhook/blue-command"/></div>
-                  <div className="fd"><label>Job Machine Webhook</label><input id="cWJ" placeholder="/webhook/blue-jobs"/></div>
-                  <div className="fd"><label>Dashboard Webhook</label><input id="cWD" placeholder="/webhook/blue-dashboard"/></div>
-                  <button className="sbtn sg" onClick={testN8n}>🔌 Test Connection</button>
-                  <button className="sbtn" onClick={saveAll}>💾 Save All</button>
-                </div>
-                <div className="gl csec">
-                  <div className="ctit">✈️ Telegram</div>
-                  <div className="fd"><label>Bot Token</label><input type="password" id="cTT" placeholder="1234567890:AAH..."/></div>
-                  <div className="fd"><label>Chat ID</label><input id="cTI" placeholder="8610059806"/></div>
-                  <div className="fd"><label>Approval Timeout (min)</label><input type="number" id="cTO" defaultValue="30" min="5" max="1440"/></div>
-                  {['Morning Brief (7 AM)','Dream Company Alerts','Recruiter Email Drafts','Interview Reminders','Weekly PDF Report'].map((lbl,i)=>(
-                    <div key={i} className="tr"><span className="trl">{lbl}</span><div className="tg on" onClick={e=>e.currentTarget.classList.toggle('on')}></div></div>
-                  ))}
-                </div>
-                <div className="gl csec">
-                  <div className="ctit">🤖 Autonomy Mode</div>
-                  <div className="fd"><label>Mode</label>
-                    <select id="cMd">
-                      <option value="safe">🔒 Safe — Drafts only</option>
-                      <option value="assist" defaultValue>🤝 Assist — HITL (Default)</option>
-                      <option value="fast">⚡ Fast — Auto low-risk</option>
-                      <option value="demo">👁 Demo — Simulated data</option>
-                    </select>
-                  </div>
-                  <div className="fd"><label>ATS Auto-Apply Threshold</label><input type="number" id="cAt" defaultValue="90" min="70" max="100"/></div>
-                  <div className="fd"><label>Max Daily Applications</label><input type="number" id="cMx" defaultValue="15" min="1" max="50"/></div>
-                  {['Include Internships','Include Full-time','Auto-apply (above threshold)'].map((lbl,i)=>(
-                    <div key={i} className="tr"><span className="trl">{lbl}</span><div className={`tg${i<2?' on':''}`} onClick={e=>e.currentTarget.classList.toggle('on')}></div></div>
-                  ))}
-                </div>
-                <div className="gl csec" style={{gridColumn:'1/-1'}}>
-                  <div className="ctit">🌐 Job Board Scan Frequency</div>
-                  <div className="blist">
-                    {ALL_B.map((b,i)=>(
-                      <div key={i} className="bi">
-                        <span className="bn">{b.n}</span>
-                        <select defaultValue={b.f}>
-                          <option value="30m">30 min</option>
-                          <option value="1h">1 hour</option>
-                          <option value="2h">2 hours</option>
-                          <option value="4h">4 hours</option>
-                          <option value="daily">Daily</option>
-                          <option value="off">Off</option>
-                        </select>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="gl csec">
-                  <div className="ctit">⭐ Dream Company Watchlist</div>
-                  <div className="fd"><label>Companies (one per line)</label>
-                    <textarea id="cDr" style={{minHeight:'110px'}} placeholder={"CrowdStrike\nPalo Alto Networks\nGoogle\nBooz Allen Hamilton\nCISA"}></textarea>
-                  </div>
-                  <div className="fd"><label>Scan Every</label>
-                    <select id="cDF" defaultValue="60">
-                      <option value="30">30 min ⚡</option>
-                      <option value="60">1 hour</option>
-                      <option value="120">2 hours</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="gl csec">
-                  <div className="ctit">🔑 API Keys</div>
-                  <div className="fd"><label>Anthropic Claude</label><input type="password" id="cAn" placeholder="sk-ant-..."/></div>
-                  <div className="fd"><label>OpenAI</label><input type="password" id="cOa" placeholder="sk-..."/></div>
-                  <div className="fd"><label>Google Gemini</label><input type="password" id="cGe" placeholder="AIza..."/></div>
-                  <div className="fd"><label>Pinecone (RAG)</label><input type="password" id="cPi" placeholder="pc-..."/></div>
-                  <div className="fd"><label>Google Sheets ID</label><input id="cSh" placeholder="16NauKVu6Kfh0hULEhhbCZtRhTqGTTGeKcVmlJats1A"/></div>
-                  <button className="sbtn" onClick={saveAll}>💾 Save API Keys</button>
-                </div>
-              </div>
-            </div>
-          )}
-
-        </div>
-      </div>
-
-      {/* CHAT FAB */}
-      <button id="cfab" onClick={()=>setChatOpen(!chatOpen)}>{chatOpen?'✕':'💬'}</button>
-      {chatOpen&&(
-        <div id="cpanel" className="open">
-          <div className="chd">
-            <div className="chdl">
-              <div className="chav">🛡</div>
-              <span className="chnm">BLUE</span>
-              <div className="pdot" style={{marginLeft:'2px'}}></div>
-            </div>
-            <button className="chcls" onClick={()=>setChatOpen(false)}>✕</button>
-          </div>
-          <div className="cmsgs">
-            {messages.map((m,i)=><div key={i} className={`cm ${m.from}`}>{m.text}</div>)}
-          </div>
-          <div className="cinr">
-            <input value={chatInput} onChange={e=>setChatInput(e.target.value)} placeholder="Ask BLUE anything..." onKeyDown={e=>e.key==='Enter'&&sendMsg()}/>
-            <button className="csnd" onClick={sendMsg}>➤</button>
+      {/* ── Toast ── */}
+      {toast && (
+        <div className="fixed top-4 right-4 z-[100] max-w-sm" style={{ animation: "slideIn 0.3s ease" }}>
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-cyan-500/15"
+            style={{ background: "rgba(5,15,35,0.92)", backdropFilter: "blur(20px)" }}>
+            <Bell size={13} className="text-cyan-400 animate-pulse flex-shrink-0" />
+            <p className="text-[10px] text-gray-400 flex-1" style={mono}>{toast}</p>
+            <button onClick={() => setToast(null)} className="ml-2"><X size={11} className="text-gray-700 hover:text-gray-400" /></button>
           </div>
         </div>
       )}
 
-      {/* TOASTS */}
-      <div id="tc">
-        {toasts.map(t=>(
-          <div key={t.id} className={`toast ${t.type}`}>
-            <span style={{fontSize:'16px',flexShrink:0}}>{t.type==='urg'?'🔔':t.type==='wrn'?'⚠️':'💙'}</span>
-            <span className="tmo">{t.msg}</span>
-            <button className="tcls" onClick={()=>setToasts(prev=>prev.filter(x=>x.id!==t.id))}>✕</button>
+      {/* ── Command Palette (Cmd+K) ── */}
+      {cmdOpen && (
+        <div className="fixed inset-0 z-[80] flex items-start justify-center pt-[18vh] bg-black/30" onClick={() => setCmdOpen(false)}>
+          <div onClick={e => e.stopPropagation()} className="w-full max-w-md mx-4 rounded-2xl border border-cyan-500/15 overflow-hidden"
+            style={{ background: "rgba(5,12,30,0.96)", backdropFilter: "blur(30px)" }}>
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.04]">
+              <Search size={15} className="text-cyan-400" />
+              <input autoFocus value={cmdQ} onChange={e => setCmdQ(e.target.value)} placeholder="Type a command..."
+                className="flex-1 bg-transparent text-xs text-white placeholder-gray-700 outline-none" style={mono} />
+              <span className="text-[8px] text-gray-700 bg-white/[0.04] px-1.5 py-0.5 rounded" style={mono}>ESC</span>
+            </div>
+            <div className="p-1.5 max-h-52 overflow-y-auto">
+              {["Check status", "Scan Handshake now", "Prep for CrowdStrike", "Run morning brief", "Apply to queued jobs",
+                "Pause job hunting", "Resume everything", "Assist mode", "Fast mode", "Demo mode", "Show weekly report"
+              ].filter(c => c.toLowerCase().includes(cmdQ.toLowerCase())).map((c, i) => (
+                <button key={i} onClick={() => { setCmdOpen(false); setCmdQ(""); if (c.includes("Demo")) setDemo(p => !p); else setToast(`Executing: ${c}`); }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[10px] text-gray-500 hover:bg-cyan-500/[0.07] hover:text-cyan-400 transition-all text-left" style={mono}>
+                  <Zap size={10} className="text-cyan-700" />{c}
+                </button>
+              ))}
+            </div>
           </div>
-        ))}
+        </div>
+      )}
+
+      {/* ── Header ── */}
+      <div className="relative z-10 px-4 sm:px-6 pt-5 pb-2">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/60 to-blue-600/60 flex items-center justify-center border border-cyan-400/15"
+              style={{ boxShadow: "0 0 18px rgba(0,180,216,0.12)" }}>
+              <Shield size={16} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-sm font-black" style={mono}>BLUE <span className="text-cyan-400">v3.0</span></h1>
+                {demo && <span className="text-[7px] px-1.5 py-0.5 rounded bg-yellow-500/10 border border-yellow-500/15 text-yellow-400 uppercase tracking-widest" style={mono}>demo</span>}
+              </div>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: status === "ONLINE" ? "#00C853" : "#FFB300", boxShadow: `0 0 4px ${status === "ONLINE" ? "#00C853" : "#FFB300"}` }} />
+                <span className="text-[8px] text-gray-600 tracking-wider" style={mono}>{status} · scanning {BOARDS[scanIdx]}...</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button onClick={() => setDemo(p => !p)} className="p-1.5 rounded-lg border border-white/[0.04] hover:bg-cyan-500/[0.06] transition-all" title="Toggle Demo Mode">
+              {demo ? <EyeOff size={13} className="text-yellow-400" /> : <Eye size={13} className="text-gray-600" />}
+            </button>
+            <button onClick={() => setCmdOpen(true)} className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/[0.04] text-[9px] text-gray-600 hover:border-cyan-500/15 transition-all" style={mono}>
+              <Search size={10} /> Cmd+K
+            </button>
+            <button onClick={() => setStatus(s => s === "ONLINE" ? "PAUSED" : "ONLINE")} className="p-1.5 rounded-lg border border-white/[0.04] hover:bg-cyan-500/[0.06] transition-all">
+              {status === "ONLINE" ? <Pause size={13} className="text-gray-600" /> : <Play size={13} className="text-green-400" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="max-w-7xl mx-auto mt-3 flex gap-0.5 p-1 rounded-xl border border-white/[0.03]" style={{ background: "rgba(5,12,28,0.25)" }}>
+          {tabs.map(({ id, l, I }) => (
+            <button key={id} onClick={() => setTab(id)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[9px] font-bold uppercase tracking-[0.12em] transition-all ${tab === id ? "bg-cyan-500/[0.08] text-cyan-400 border border-cyan-500/[0.12]" : "text-gray-700 hover:text-gray-500"}`} style={mono}>
+              <I size={11} />{l}
+              {id === "offers" && D.offers.length > 0 && <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />}
+            </button>
+          ))}
+        </div>
       </div>
-    </>
-  )
+
+      {/* ── Content ── */}
+      <div className="relative z-10 px-4 sm:px-6 pb-24 max-w-7xl mx-auto mt-2">
+
+        {/* ════ OVERVIEW ════ */}
+        {tab === "overview" && (
+          <div className="space-y-3">
+            {/* Metrics */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              {[{ l: "Applied", v: D.metrics.applied, I: Send }, { l: "Pipeline", v: D.metrics.pipe, I: Briefcase },
+                { l: "Interviews", v: D.metrics.intv, I: Calendar }, { l: "Response", v: `${D.metrics.resp}%`, I: TrendingUp }
+              ].map(({ l, v, I }, i) => (
+                <Glass key={i} className="p-4">
+                  <p className={label} style={mono}>{l}</p>
+                  <div className="flex items-end justify-between mt-1.5">
+                    <span className="text-2xl font-black" style={{ ...mono, textShadow: "0 0 15px rgba(0,180,216,0.06)" }}>{v}</span>
+                    <I size={13} className="text-cyan-700/30 mb-1" />
+                  </div>
+                </Glass>
+              ))}
+            </div>
+
+            {/* Gauge + Heatmap */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <Glass className="p-5 flex flex-col items-center justify-center">
+                <Gauge value={D.metrics.prob} />
+                <p className="text-[8px] text-gray-700 mt-2 text-center" style={mono}>velocity + market + pipeline</p>
+              </Glass>
+              <Glass className="p-4 sm:col-span-2">
+                <p className={label} style={mono}>application heatmap (8 weeks)</p>
+                <div className="flex flex-wrap gap-[3px] mt-2.5">
+                  {HEATMAP.map((h, i) => (
+                    <div key={i} className="w-[11px] h-[11px] rounded-[3px] transition-all hover:scale-[1.6] cursor-pointer"
+                      style={{ background: h.c === 0 ? "rgba(0,180,216,0.02)" : `rgba(0,180,216,${0.08 + h.c * 0.16})`, boxShadow: h.c > 3 ? "0 0 4px rgba(0,180,216,0.2)" : "none" }} />
+                  ))}
+                </div>
+                <div className="flex items-center gap-1.5 mt-2.5">
+                  <span className="text-[7px] text-gray-700">Less</span>
+                  {[0.02, 0.15, 0.35, 0.55, 0.82].map((o, i) => (
+                    <div key={i} className="w-[10px] h-[10px] rounded-[2px]" style={{ background: `rgba(0,180,216,${o})` }} />
+                  ))}
+                  <span className="text-[7px] text-gray-700">More</span>
+                </div>
+              </Glass>
+            </div>
+
+            {/* Charts */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <Glass className="p-4">
+                <p className={label} style={mono}>weekly trend</p>
+                <ResponsiveContainer width="100%" height={135} className="mt-2">
+                  <AreaChart data={D.weekly}>
+                    <defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#00B4D8" stopOpacity={0.12} /><stop offset="95%" stopColor="#00B4D8" stopOpacity={0} /></linearGradient></defs>
+                    <XAxis dataKey="w" tick={{ fill: "#222", fontSize: 8 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: "#222", fontSize: 8 }} axisLine={false} tickLine={false} width={18} />
+                    <Tooltip contentStyle={{ background: "rgba(5,12,30,0.95)", border: "1px solid rgba(0,180,216,0.1)", borderRadius: 10, fontSize: 9, ...mono }} />
+                    <Area type="monotone" dataKey="a" stroke="#00B4D8" fill="url(#tg)" strokeWidth={1.5} name="Apps" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Glass>
+              <Glass className="p-4">
+                <p className={label} style={mono}>board performance</p>
+                <ResponsiveContainer width="100%" height={135} className="mt-2">
+                  <BarChart data={D.boards} layout="vertical">
+                    <XAxis type="number" tick={{ fill: "#222", fontSize: 8 }} axisLine={false} tickLine={false} />
+                    <YAxis type="category" dataKey="b" tick={{ fill: "#444", fontSize: 8 }} axisLine={false} tickLine={false} width={65} />
+                    <Tooltip contentStyle={{ background: "rgba(5,12,30,0.95)", border: "1px solid rgba(0,180,216,0.1)", borderRadius: 10, fontSize: 9 }} />
+                    <Bar dataKey="i" radius={[0, 5, 5, 0]} name="Interviews">{D.boards.map((e, i) => <Cell key={i} fill={e.c} fillOpacity={0.5} />)}</Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Glass>
+            </div>
+
+            {/* Activity Feed */}
+            <Glass className="p-4">
+              <div className="flex items-center justify-between mb-2.5">
+                <p className={label} style={mono}>live activity</p>
+                <div className="flex items-center gap-1"><Radio size={8} className="text-cyan-500 animate-pulse" /><span className="text-[7px] text-cyan-700" style={mono}>{BOARDS[scanIdx]}...</span></div>
+              </div>
+              {D.activity.map((a, i) => { const I = actIcons[a.tp] || Zap; return (
+                <div key={i} className="flex items-start gap-2.5 py-1.5 border-b border-white/[0.015] last:border-0">
+                  <I size={11} className={`${actColors[a.tp]} mt-0.5 flex-shrink-0`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] text-gray-500 leading-relaxed">{a.a}</p>
+                    <p className="text-[8px] text-gray-800 mt-0.5" style={mono}>{a.t}</p>
+                  </div>
+                </div>
+              ); })}
+            </Glass>
+          </div>
+        )}
+
+        {/* ════ PIPELINE ════ */}
+        {tab === "pipeline" && (
+          <div className="space-y-2.5">
+            {D.pipeline.map((stage, si) => (
+              <Glass key={si} className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full`} style={{ background: ["#666", "#00B4D8", "#FFB300", "#9C27B0", "#00C853"][si], boxShadow: si > 0 ? `0 0 5px ${["", "#00B4D8", "#FFB300", "#9C27B0", "#00C853"][si]}40` : "" }} />
+                    <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500" style={mono}>{stage.stage}</p>
+                  </div>
+                  <span className="text-[8px] text-gray-700 bg-white/[0.03] px-1.5 py-0.5 rounded" style={mono}>{stage.items.length}</span>
+                </div>
+                {stage.items.map((it, i) => (
+                  <div key={i} className="flex items-center justify-between p-2.5 mb-1 rounded-xl border border-white/[0.03] hover:bg-cyan-500/[0.02] transition-all cursor-pointer group">
+                    <div>
+                      <p className="text-xs font-semibold">{it.co}</p>
+                      <p className="text-[9px] text-gray-600">{it.ro}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[8px] text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity" style={mono}>{it.kw}</span>
+                      <span className={`text-[9px] px-2 py-0.5 rounded font-bold ${it.ats >= 90 ? "bg-green-500/[0.08] text-green-400 border border-green-500/[0.12]" : it.ats >= 80 ? "bg-cyan-500/[0.08] text-cyan-400 border border-cyan-500/[0.12]" : "bg-white/[0.03] text-gray-500 border border-white/[0.05]"}`} style={mono}>{it.ats}</span>
+                    </div>
+                  </div>
+                ))}
+                {stage.items.length === 0 && <p className="text-[10px] text-gray-700 text-center py-3" style={mono}>Empty</p>}
+              </Glass>
+            ))}
+          </div>
+        )}
+
+        {/* ════ INTERVIEWS ════ */}
+        {tab === "interviews" && (
+          <div className="space-y-2.5">
+            <Glass glow className="p-4">
+              <div className="flex items-center justify-between">
+                <div><p className="text-[7px] text-cyan-500 uppercase tracking-[0.25em]" style={mono}>next interview</p><p className="text-base font-black mt-1">{D.interviews[0].co}</p></div>
+                <Countdown date={D.interviews[0].date} time={D.interviews[0].time} />
+              </div>
+            </Glass>
+
+            {D.interviews.map((iv, i) => (
+              <Glass key={i} className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div><p className="text-sm font-bold">{iv.co}</p><p className="text-[9px] text-gray-600">{iv.ro}</p></div>
+                  <div className="flex gap-1.5">
+                    {iv.culture && <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-yellow-500/[0.07] border border-yellow-500/[0.1] text-yellow-500 flex items-center gap-0.5"><Star size={7} />{iv.culture}</span>}
+                    <span className={`text-[8px] px-1.5 py-0.5 rounded-full ${iv.type === "Video" ? "bg-cyan-500/[0.07] text-cyan-400 border border-cyan-500/[0.1]" : "bg-purple-500/[0.07] text-purple-400 border border-purple-500/[0.1]"}`}>{iv.type}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div className="flex items-center gap-1.5"><Calendar size={9} className="text-gray-700" /><span className="text-[9px] text-gray-600" style={mono}>{iv.date}</span></div>
+                  <div className="flex items-center gap-1.5"><Clock size={9} className="text-gray-700" /><span className="text-[9px] text-gray-600" style={mono}>{iv.time}</span></div>
+                </div>
+                {/* Weather + Commute */}
+                <div className="flex flex-wrap gap-1.5 mt-2.5">
+                  {iv.wx && <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-yellow-500/[0.03] border border-yellow-500/[0.07]"><Cloud size={9} className="text-yellow-600/40" /><span className="text-[8px] text-yellow-500/60" style={mono}>{iv.wx}</span></div>}
+                  {iv.cm && <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-cyan-500/[0.03] border border-cyan-500/[0.07]"><Car size={9} className="text-cyan-600/40" /><span className="text-[8px] text-cyan-500/60" style={mono}>{iv.cm}</span></div>}
+                </div>
+                {/* Address */}
+                {iv.addr && <div className="mt-2.5 p-2.5 rounded-xl border border-white/[0.03]" style={{ background: "rgba(0,180,216,0.012)" }}><div className="flex items-start gap-2"><MapPin size={11} className="text-red-400 mt-0.5 flex-shrink-0" /><div><p className="text-[9px] text-gray-500">{iv.addr}</p><MapBtns addr={iv.addr} /></div></div></div>}
+                {/* Video link */}
+                {iv.link && <a href={iv.link} target="_blank" rel="noopener noreferrer" className="mt-2.5 flex items-center gap-1.5 p-2.5 rounded-xl bg-cyan-500/[0.03] border border-cyan-500/[0.08] hover:bg-cyan-500/[0.07] transition-all"><ExternalLink size={11} className="text-cyan-400" /><span className="text-[9px] text-cyan-400" style={mono}>Join Video Call</span></a>}
+                {/* Prep bar */}
+                <div className="mt-2.5">
+                  <div className="flex justify-between mb-1"><span className={label} style={mono}>prep progress</span><span className="text-[8px] text-gray-600" style={mono}>{iv.prep}%</span></div>
+                  <div className="w-full h-1 rounded-full bg-white/[0.03]"><div className="h-full rounded-full transition-all duration-700" style={{ width: `${iv.prep}%`, background: iv.prep >= 80 ? "#00C853" : iv.prep >= 50 ? "#FFB300" : "#E53935", boxShadow: iv.prep >= 80 ? "0 0 6px #00C85325" : "" }} /></div>
+                </div>
+                {/* Practice */}
+                <div className="mt-2.5 p-2 rounded-xl bg-purple-500/[0.02] border border-purple-500/[0.06]">
+                  <p className="text-[7px] text-purple-400/50 uppercase tracking-[0.2em] mb-0.5" style={mono}>practice schedule</p>
+                  <p className="text-[9px] text-gray-600">{iv.prep < 50 ? `Run 'Prep ${iv.co}' now. Practice 2 hrs/day until ${iv.date}.` : iv.prep < 80 ? "One more mock simulation + review company news." : "Light review day before. You're ready."}</p>
+                </div>
+                {/* Checklist for next interview */}
+                {i === 0 && (
+                  <div className="mt-2.5 p-2.5 rounded-xl border border-cyan-500/[0.07]" style={{ background: "rgba(0,180,216,0.012)" }}>
+                    <p className="text-[7px] text-cyan-500/50 uppercase tracking-[0.2em] mb-1.5" style={mono}>interview day checklist</p>
+                    {REAL_DATA.checklist.map((c, ci) => (
+                      <div key={ci} className="flex items-center gap-1.5 py-[3px]">
+                        <div className={`w-3 h-3 rounded border flex items-center justify-center ${c.d ? "bg-green-500/[0.12] border-green-500/20" : "border-white/[0.08]"}`}>
+                          {c.d && <CheckCircle size={7} className="text-green-400" />}
+                        </div>
+                        <span className={`text-[9px] ${c.d ? "text-gray-600 line-through" : "text-gray-500"}`}>{c.t}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Glass>
+            ))}
+          </div>
+        )}
+
+        {/* ════ OFFERS ════ */}
+        {tab === "offers" && (
+          <div className="space-y-2.5">
+            {D.offers.length === 0 ? (
+              <Glass className="p-10 text-center"><Award size={28} className="text-gray-700 mx-auto mb-3" /><p className="text-gray-600 text-xs" style={mono}>No offers yet. Pipeline looks strong. Keep going.</p></Glass>
+            ) : D.offers.map((o, i) => (
+              <Glass key={i} glow className="p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="w-2 h-2 rounded-full bg-green-400" style={{ boxShadow: "0 0 6px #00C853" }} />
+                  <p className="text-[7px] text-green-400 uppercase tracking-[0.25em] font-bold" style={mono}>active offer</p>
+                </div>
+                <p className="text-xl font-black">{o.co}</p>
+                <p className="text-xs text-gray-600 mt-0.5">{o.ro}</p>
+
+                <div className="grid grid-cols-2 gap-2.5 mt-4">
+                  {[{ l: "compensation", v: o.sal, cls: "text-green-400", bg: "rgba(0,200,83,0.02)" },
+                    { l: "start date", v: o.start, cls: "text-white", bg: "rgba(0,180,216,0.015)" },
+                    { l: "work mode", v: o.remote, cls: "text-white text-[10px]", bg: "rgba(0,180,216,0.015)" },
+                    { l: "deadline", v: o.dl, cls: "text-red-400", bg: "rgba(229,57,53,0.02)" }
+                  ].map((f, fi) => (
+                    <div key={fi} className="p-2.5 rounded-xl border border-white/[0.03]" style={{ background: f.bg }}>
+                      <p className={label} style={mono}>{f.l}</p>
+                      <p className={`text-sm font-bold mt-1 ${f.cls}`}>{f.v}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Bell Curve */}
+                <div className="mt-3 p-3 rounded-xl border border-white/[0.03]" style={{ background: "rgba(0,180,216,0.012)" }}>
+                  <div className="flex justify-between mb-1.5"><p className={label} style={mono}>market position</p><span className="text-[8px] text-green-400" style={mono}>{o.pct}th percentile</span></div>
+                  <BellCurve pct={o.pct} />
+                </div>
+
+                <div className="mt-3 p-2.5 rounded-xl border border-white/[0.03]" style={{ background: "rgba(0,180,216,0.012)" }}>
+                  <p className={label} style={mono}>benefits</p>
+                  <p className="text-[10px] text-gray-500 mt-1 leading-relaxed">{o.benefits}</p>
+                </div>
+
+                {/* Maps */}
+                <div className="mt-3 p-3.5 rounded-xl border border-white/[0.04]" style={{ background: "linear-gradient(135deg, rgba(0,180,216,0.015), rgba(100,60,180,0.015))" }}>
+                  <div className="flex items-center gap-1.5 mb-2"><MapPin size={13} className="text-red-400" /><p className="text-[9px] font-bold">Office Location</p></div>
+                  <p className="text-[10px] text-gray-500">{o.addr}</p>
+                  <MapBtns addr={o.addr} />
+                  <div className="mt-2.5 rounded-xl overflow-hidden border border-white/[0.04] h-32">
+                    <iframe width="100%" height="100%" frameBorder="0" loading="lazy" allowFullScreen
+                      style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) brightness(0.85) contrast(1.15)" }}
+                      src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(o.addr)}&zoom=14`} />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 mt-4">
+                  <button onClick={() => { setConfetti(true); setTimeout(() => setConfetti(false), 3500); }}
+                    className="flex-1 py-2.5 rounded-xl bg-green-500/[0.08] border border-green-500/[0.15] text-green-400 text-[10px] font-bold hover:bg-green-500/[0.15] transition-all flex items-center justify-center gap-1.5">
+                    <CheckCircle size={13} /> Accept Offer
+                  </button>
+                  <button className="flex-1 py-2.5 rounded-xl bg-yellow-500/[0.04] border border-yellow-500/[0.1] text-yellow-400 text-[10px] font-bold hover:bg-yellow-500/[0.1] transition-all flex items-center justify-center gap-1.5">
+                    <ArrowUpRight size={13} /> Negotiate
+                  </button>
+                </div>
+              </Glass>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ── Chat Widget ── */}
+      {chatOpen && (
+        <div className="fixed bottom-20 right-4 left-4 sm:left-auto sm:w-80 z-50 rounded-2xl border border-cyan-500/[0.1] overflow-hidden"
+          style={{ background: "rgba(3,10,25,0.96)", backdropFilter: "blur(30px)", boxShadow: "0 0 35px rgba(0,180,216,0.07)" }}>
+          <div className="flex items-center justify-between p-2.5 border-b border-white/[0.03]">
+            <div className="flex items-center gap-1.5"><Shield size={12} className="text-cyan-400" /><span className="text-[9px] font-bold tracking-widest" style={mono}>BLUE</span><span className="w-1 h-1 rounded-full bg-green-400" /></div>
+            <button onClick={() => setChatOpen(false)}><X size={11} className="text-gray-700 hover:text-gray-400" /></button>
+          </div>
+          <div className="h-48 overflow-y-auto p-2.5 space-y-1.5">
+            {chatHist.map((m, i) => (
+              <div key={i} className={`flex ${m.f === "u" ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[85%] px-2.5 py-1.5 rounded-xl text-[9px] leading-relaxed ${m.f === "u" ? "bg-cyan-500/[0.1] text-cyan-200 border border-cyan-500/[0.1]" : "bg-white/[0.02] text-gray-500 border border-white/[0.03]"}`} style={mono}>{m.t}</div>
+              </div>
+            ))}
+            <div ref={chatEnd} />
+          </div>
+          <div className="p-2.5 border-t border-white/[0.03] flex gap-1.5">
+            <input value={chatMsg} onChange={e => setChatMsg(e.target.value)} onKeyDown={e => e.key === "Enter" && sendChat()}
+              placeholder="Talk to BLUE..." className="flex-1 bg-white/[0.02] border border-white/[0.04] rounded-xl px-2.5 py-1.5 text-[9px] text-white placeholder-gray-800 outline-none focus:border-cyan-500/15" style={mono} />
+            <button onClick={sendChat} className="p-1.5 rounded-xl bg-cyan-500/[0.08] border border-cyan-500/[0.1] hover:bg-cyan-500/[0.15] transition-all">
+              <Send size={11} className="text-cyan-400" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Chat FAB */}
+      <button onClick={() => setChatOpen(!chatOpen)}
+        className="fixed bottom-5 right-4 w-12 h-12 rounded-2xl flex items-center justify-center z-50 transition-all active:scale-95 hover:scale-105"
+        style={{ background: "linear-gradient(135deg, #0080DD, #00B4D8)", boxShadow: "0 0 20px rgba(0,180,216,0.22)" }}>
+        {chatOpen ? <X size={18} /> : <MessageCircle size={18} />}
+      </button>
+
+      <style>{`
+        @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @keyframes slideIn { 0% { transform: translateX(120%); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+      `}</style>
+    </div>
+  );
 }
